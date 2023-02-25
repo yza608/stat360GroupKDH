@@ -1,13 +1,6 @@
 library(rpart)
 library(earth)
 
-set.seed(1)
-x1 <- 1:100
-x2 <- rnorm(100)
-x3 <- rnorm(100)
-y <- x1+rnorm(100)
-data <- data.frame(y,x1,x2,x3)
-
 
 new_node <- function(data,childl=NULL,childr=NULL){
   nn <- list(data=data,childl=childl,childr=childr)
@@ -79,7 +72,7 @@ fwd_stepwise <- function(formula, data){
   return(fwd_list)
 }
 
-bwd_stepwise <- function(bwd_in, data){ 
+bwd_stepwise <- function(bwd_in, data){
   bwd_list = step(bwd_in, data)
   return(bwd_list)
 }
@@ -89,23 +82,11 @@ mars.control <- function(){
   return(control_list)
 }
 
-mars <- function(formula, data, control){ 
-  fwd_out <- fwd_stepwise(formula, data) 
-  bwd_out <- bwd_stepwise(fwd_out, data) 
-  return(bwd_out) 
+mars <- function(formula, data, control){
+  fwd_out <- fwd_stepwise(formula, data)
+  bwd_out <- bwd_stepwise(fwd_out, data)
+  return(bwd_out)
 }
-
-
-?split
-mars.control()
-mars(y~., data=data)
-
-testdata <- data
-rm(data) # remove the original dataframe "data" from Global Environment.
-mars(y ~., data = testdata)
-
-
-
 
 print.region <- function(R,print.data=FALSE){
   cat("coordinates:\n") # \n indicates start the following in a new line
@@ -119,7 +100,7 @@ print.region <- function(R,print.data=FALSE){
 }
 
 plot_regions.tree <- function(tree){
-  plot(tree$data$x[,1],tree$data$x[,2],xlab="X1",ylab="X2") 
+  plot(tree$data$x[,1],tree$data$x[,2],xlab="X1",ylab="X2")
   plot_regions.node(tree$childl)
   plot_regions.node(tree$childr)
 }
@@ -133,14 +114,6 @@ plot_regions.node<- function(node) {
   plot_regions.node(node$childr)
 }
 
-set.seed(123); n <- 10
-x <- data.frame(x1=rnorm(n),x2=rnorm(n))
-y <- rnorm(n)
-mytree <- recpart(x,y)
-plot_regions.tree(mytree)
-
-
-?rep
 
 init_B <- function(n, Mmax){
   B <- data.frame( matrix(NA,nrow=n,ncol=(Mmax+1)) )
@@ -149,19 +122,24 @@ init_B <- function(n, Mmax){
   return(B)
 }
 
-init_B(1,3)
+H <- function(s, diff){
+  eta = s*diff
+  if(s==1){out=as.numeric(eta>0)}
+  if(s==-1){out=as.numeric(eta>=0)}
+  return(out)
+}
 
 recpart_fwd <- function(y,x,Mmax){
   #---------------------------------------------------
   # Error checking for Mmax:(write your code below)
   # ...
   #---------------------------------------------------
-  
+
   if(Mmax<2) {
     warning("Input Mmax must be >= 2; setting to 2")
     Mmax <- 2
   }
-  
+
   # Initialize:
   N <- length(y) # sample size
   n <- ncol(x) # number of predictors = number of X
@@ -169,7 +147,9 @@ recpart_fwd <- function(y,x,Mmax){
   B <- init_B(N,Mmax) # Exercise: write init_B()
   # splits: a data frame records all the optimal (m, v, t):
   # m: parent basis func to split, v: splitting var, t: splitting point
-  splits <- data.frame(m=rep(NA,Mmax),v=rep(NA,Mmax),t=rep(NA,Mmax))
+  #splits <- data.frame(m=rep(NA,Mmax),v=rep(NA,Mmax),t=rep(NA,Mmax))
+  
+  Bfuncs <- vector("list", length = Mmax+1)
   #
   #---------------------------------------------------
   # Looping for forward selection:
@@ -177,26 +157,46 @@ recpart_fwd <- function(y,x,Mmax){
     lof_best <- Inf
     for(m in 1:M) { # choose a basis function to split
       for(v in 1:n){ # select a variable to split on
-        tt <- split_points(x[,v],B[,m]) # Exercise: write split_points() 
-        for(t in tt) { 
+        tt <- split_points(x[,v],B[,m]) # Exercise: write split_points()
+        for(t in tt) {
           Bnew <- data.frame(B[,(1:M)[-m]], # drop m-th col: B[,-m]
                              # replace parent B[,m] with Btem1,Btem2
-                             Btem1=B[,m]*(x[,v]>t), 
-                             Btem2=B[,m]*(x[,v]<=t)) 
+
+                             Btem1=B[,m]*H(1, +(x[,v]-t)),
+                             Btem2=B[,m]*H(-1, -(x[,v]-t)))
+          
           gdat <- data.frame(y=y,Bnew)
           lof <- LOF(y~.,gdat) #  Use your LOF() from week 4
-          if(lof < lof_best) { 
+          if(lof < lof_best) {
             lof_best <- lof
-            splits[M,] <- c(m,v,t) 
+            best_split <- c(m=m,v=v,t=t)
           } # end if
         } # end loop over splits
       } # end loop over variables
     } # end loop over basis functions to split
     # save optimal (m, v, t) and update basis functions
-    mstar <- splits[M,1]; vstar <- splits[M,2]; tstar <- splits[M,3]
+    mstar <- best_split["m"]; vstar <- best_split["v"]; tstar <- best_split["t"]
+    
     cat("[Info] best (m,v,t,lof): (",mstar,vstar,tstar,lof_best,")\n")
-    B[,M+1] <- B[,mstar]*(x[,vstar]<=tstar) # 
+    B[,M+1] <- B[,mstar]*(x[,vstar]<=tstar) #
     B[,mstar] <- B[,mstar]*(x[,vstar]>tstar)
+    
+    Bfuncs[[M+1]] = rbind(Bfuncs[[mstar]], c(-1, vstar, tstar))
+    Bfuncs[[mstar]] = rbind(Bfuncs[[mstar]], c(+1, vstar, tstar))
+    
   } # end loop over M
-  return(list(B=B,splits=splits))
+  return(list(B=B,Bfuncs=Bfuncs))
 }
+
+set.seed(123); n<-10
+x<-data.frame(x1=rnorm(n),x2=rnorm(n))
+y <- rnorm(n)
+rp_fwd <- recpart_fwd(y,x,Mmax=9)
+
+
+#test
+set.seed(123); n <- 10
+x <- data.frame(x1=rnorm(n),x2=rnorm(n))
+y <- rnorm(n)
+rp_fwd <- recpart_fwd(y,x,Mmax=9)
+rp_fwd$Bfuncs
