@@ -1,0 +1,22 @@
+Package: mars
+Title: performs a Multivariate Adaptive Regression Splines (MARS) analysis
+Version: 1.0.0
+Authors@R: c(person("Yiding", "Zhi", email = "yza608@sfu.ca",role=c("aut", "cre")), person("Kara", "Nguyen", role="ctb"),person("Harshit", "Goyal.", role=c("ctb")))
+Description: 
+  MARS is a non-parametric regression technique that partitions the predictor space into simple regions defined by piecewise linear functions of the input variables. 
+  The MARS algorithm uses a forward stepwise approach to iteratively add basis functions to the model. This is done until a specified maximum number of functions or 
+  a stopping criterion is reached. Then, a backward stepwise approach is used to prune the model by removing any basis functions that do not contribute significantly 
+  to the model’s performance.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Imports: stats
+Suggests:
+    readxl,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Depends: 
+    R (>= 3.5.0)
+LazyData: true
