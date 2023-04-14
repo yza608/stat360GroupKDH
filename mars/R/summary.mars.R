@@ -19,13 +19,14 @@ summary.mars <- function(object){
   print(sumdata)
   summary(object$residuals)
 
+
   for (i in 2:length(object$Bfuncs)){
-    cat("Coefficient ",names(object$coefficients)[i],":\n")
+    cat("Coefficients ",names(object$coefficients)[i],": \n")
     for (j in 1: nrow(object$Bfuncs[[i]])){
       cat("Hinge function:",
-          object$x_names[object$Bfunc[[i]][j,2]],
+          object$x_names[object$Bfuncs[[i]][j,2]],
           "sign",
-          object$Bfunc[[i]][j,1],
+          object$Bfuncs[[i]][j,1],
           "split at:",
           object$Bfuncs[[i]][j,3],
           "\n")

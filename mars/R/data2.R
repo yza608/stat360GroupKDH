@@ -1,13 +1,10 @@
 #' data2
 #'
 #' @name data2
-#' @description The data set contains values for 6 attributes (molecular descriptors) of 908 chemicals used to predict quantitative acute aquatic toxicity towards the fish Pimephales promelas (fathead minnow).
+#' @description In the Delft data set, 308 full-scale experiments were performed at the Delft Ship Hydromechanics Laboratory. The experiments include 22 different hull forms that are derived from a parent form closely related to Frans Maas' Standfast 43'.
 #' @details
-#' Independent Variables: ClC0 (information indices), SM1_Dz(Z) (2D matrix-based descriptors),
-#' GATS1i (2D autocorrelations), NdsCH (atom-type counts), NdssC (atom-type counts), and
-#' MLOGP (molecule properties).
-#'                                                                                                                        constraints).
-#' Dependent Variables: LC50 (the concentration that causes death in 50% of test fish over a 96-hour test duration).
-#' @references \url{https://archive.ics.uci.edu/ml/datasets/QSAR+fish+toxicity}
+#' Independent Variables: Longitudinal position of the center of buoyancy, Prismatic coefficient, Length-displacement ratio, Beam-draught ratio, Length-beam ratio , and Froude number.
+#' Dependent Variables: Residuary resistance per unit weight of displacement.
+#' @references \url{https://archive.ics.uci.edu/ml/datasets/Yacht+Hydrodynamics}
 #' @keywords data2
 NULL

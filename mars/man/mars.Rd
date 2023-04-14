@@ -20,17 +20,16 @@ a \code{mars} object, which contain the model
 The mars() function, which is the main function in the MARS Package, performs a Multivariate Adaptive Regression Splines (MARS) analysis. The MARS algorithm builds a regression model by partitioning the predictor variables into segments and fitting a linear regression model to each segment.
 }
 \details{
-MARS is a non-parametric regression technique that partitions the predictor space into simple regions defined by piecewise linear functions of the input variables. The MARS algorithm uses a forward stepwise approach to iteratively add basis functions to the model. This is done until a specified maximum number of functions or a stopping criterion is reached. Then, a backward stepwise approach is used to prune the modelby removing any basis functions that do not contribute significantly to the model’s performance.
+MARS is a non-parametric regression technique that partitions the predictor space into simple regions defined by piecewise linear functions of the input variables. The MARS algorithm uses a forward stepwise approach to iteratively add basis functions to the model. This is done until a specified maximum number of functions or a stopping criterion is reached. Then, a backward stepwise approach is used to prune the modelby removing any basis functions that do not contribute significantly to the model's performance.
 }
 \examples{
-test <- mars(y~.,data=data1[1:100,])
 
+test <- mars(y~.,data=data1[1:100,])
 print(test)
 summary(test)
 plot(test)
 anova(test)
-predict(test,data1[101:200,])
-
+predict(test,data1[101:200,2:10])
 }
 \references{
 Jerome H. Friedman. Multivariate Adaptive Regression Splines (with discussion).Annals of Statistics 19/1, 1991. \url{https://statistics.stanford.edu/research/multivariate-adaptive-regression-splines.}
@@ -38,11 +37,13 @@ Jerome H. Friedman. Multivariate Adaptive Regression Splines (with discussion).A
 \seealso{
 \link{mars.control} for constructing control objects, The default mars.control has Mmax (the maximum number of model terms) is 2 and d (the smoothing parameter) is 3, but users can customize their mars.control.
 
-\link{plot.mars} for generates four different residual plots。
+\link{plot.mars} for generates four different residual plots.
 
 \link{predict.mars} for generates new dependent values based on the dataset.
 
 \link{summary.mars} for provides a summary table of the estimated coefficients of all the independent variables with respect to the dependent variable.
 
 \link{print.mars} for printing the coefficients for each independent variable.
+
+\link{anova.mars} for compute analysis of variance (or deviance) tables for fitted \code{mars} model objects.
 }

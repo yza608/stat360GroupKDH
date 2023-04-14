@@ -1,0 +1,281 @@
+---
+title: "mars"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{mars}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE, echo=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# How to Access the Package  
+
+[link](https://github.com/yza608/stat360GroupKDH)  
+
+# Description
+
+The `mars()` function, which is the main function in the **MARS Package**, performs a **Multivariate Adaptive Regression Splines (MARS)** analysis. The **MARS** algorithm builds a regression model by partitioning the predictor variables into segments and fitting a linear regression model to each segment. 
+
+
+# Usage
+
+> mars(formula, data, control=mars.control())
+
+
+# Arguments
+
+Argument| Meaning
+--------|--------
+Formula| n object of class *"formula"* (or one that can be coerced into that class): a symbolic description of the model to be fitted.
+Data    | An optional data frame, list, or environment (or object coercible by `as.data.frame()` to a data frame) containing the variables in the model. If not found in the data, the variables are taken from the environment of *"formula"*, typically the environment from which `mars()` is called.
+Control | An object of *"mars.control"* with Mmax = 2 and d = 3, by default.
+
+
+# Details
+
+**MARS** builds modes of the form: ${\displaystyle {\widehat {f}}(x)=\sum _{i=1}^{k}c_{i}B_{i}(x).}$  
+
+* $B_{i}(x)$ = A weight sum of basis functions  
+* $c_{i}$ = A constant coefficient  
+
+**MARS** is a non-parametric regression technique that partitions the predictor space into simple regions defined by piecewise linear functions of the input variables. The **MARS** algorithm uses a forward stepwise approach to iteratively add basis functions to the model. This is done until a specified maximum number of functions or a stopping criterion is reached. Then, a backward stepwise approach is used to prune the model by removing any basis functions that do not contribute significantly to the model's performance.
+
+The `mars()` function takes formula, data, and control arguments as inputs. It returns a list object containing information about the model. This includes the call, formula, response variable, basis functions, and the final linear model fitted to the data. The control argument of the `mars()` function is the output from `mars.control()` function called within `mars()`. The function `mars.control()` provides a list of control parameters that can be passed as an argument to the `mars()` function. The default `mars.control()` includes:  
+
+* **Mmax**, the maximum number of model terms or basic functions = 2  
+* **d**, the smoothing parameter or degree of interaction to be considered = 3  
+* **trace**, the logical value indicating whether the function should print progress messages = FALSE.
+
+Users can customize their *Mmax* and *d*, but *Mmax* must be an integer greater than or equal to 2 and *d* = 3 works best as suggested by Friedman. If any of the validations fail, a warning or error message will be printed, and the values will be reset to the default values.
+
+Within `mars()`, the `fwd_stepwise()` (based on *Algorithm 2*) and `bwd_stepwise()` (based on *Algorithm 3*) functions are called to perform the forward and backward steps of the **MARS** algorithm, respectively. The `LOF()` (based on *Generalized cross-validation*, or *GCV*) and `h()` functions are also called within `fwd_stepwise()` to calculate the *Lack-of-Fit criterion* and the *Hinge Function*, respectively, which are used to determine the optimal split points for the basis functions. The `LOF()` function is also called within `bwd_stepwise()`. The `h()` function has the form $max(0,x-c)$ or $max(0,c-x)$ (these are mirror images).
+
+
+# Value
+
+`mars()` function returns an object of class *mars”*, including a list that contains at least the following components:
+
+Component| Description
+---------|---------
+coefficients | A named vector of coefficients
+residuals | The residuals, that is response minus fitted value, from the linear regression model.
+fitted.values | The fitted mean values from the linear regression model.
+rank | The numeric rank of the fitted linear regression model.
+df.residual | The residual degrees of freedom.
+call | The matched call to the function.
+terms | The terms object used.
+xlevels | A record of the levels of the factors used in fitting.
+y | The response variable used.
+B | A matrix with the basis functions used in the model.
+Bfuncs | A list of functions used to generate the basis functions.
+x_names | The names of the predictor variables.
+model | The model frame used.
+control | The control parameters used in the model.
+qr | The QR decomposition of the model matrix.
+
+
+# Authors
+
+* **Yiding (Daniel) Zhi** (BSc Data Science)  
+* **Kara (My Ngoc Nhu) Nguyen** (BSc Health Sciences, concentration in Life Science)  
+* **Harshit Goyal** (BA Economics, concentration in Economic Data Analysis and Minor Statistics)  
+
+
+# References
+
+* Friedman, J. H. (1991). Multivariate Adaptive Regression Splines. *Annals of Statistics*, 19(1). [link](https://doi.org/10.1214/aos/1176347963)  
+* Gerritsma, J., Onnink, R., & Versluis, A. (1981). Geometry, resistance and stability of the Delft systematic yacht hull series1. International Shipbuilding Progress, 28(328), 276–297. [link](https://doi.org/10.3233/isp-1981-2832801). [*data2*]  
+* Jani, A. M., & Chandpa, K. R. (2015). Protein Tertiary Structure Classification based on its Physicochemical property using Neural Network and KPCA-SVM: A Comparative Study. *International Journal of Applied Science and Engineering*. [link](https://doi.org/10.5958/2322-0465.2015.00002.7) [*data1*]  
+* Wickham, H. (2019). *Advanced R*. CRC Press. [link](https://adv-r.hadley.nz/)  
+* Wickham, H. (2015). *R Packages: Organize, Test, Document, and Share Your Code*. “O’Reilly Media, Inc.” [link](https://r-pkgs.org/)  
+* Yeh, I. (1998). Modeling of strength of high-performance concrete using artificial neural networks. *Cement and Concrete Research*, 28(12), 1797–1808. [link](https://doi.org/10.1016/s0008-8846(98)00165-3) [*data3*]
+
+
+# See Also
+
+**`summary()`** provides a summary table of the estimated coefficients of all the independent variables with respect to the dependent variable. For each independent variable, a sign (represents where the split direction is left: -1 or right: +1) and a knot for each split are also provided.
+
+**`anova()`** first Calls the `mars()` function and briefly provides the summary table of the coefficients of all the variables from the data. `anova.()` also has a similar function as `anova()` that computes the analysis of variance table for one or more linear model fits and returns the analysis of variance table with all the values of degrees of freedom (Df), the sum of squares (Sum Sq), mean squares (Mean Sq), F statistics (F value), and P values (Pr).
+
+**`predict()`** generates new dependent values based on the dataset.  
+
+**`print()`** also calls the `mars()` function and the regression model formula, then provides the coefficients for each independent variable.
+
+**`plot()`** generates four different residual plots:  
+
+* A **Cumulative Distribution** plot shows the empirical *cumulative distribution function (CDF)* of the data. The empirical CDF is the proportion of values less than or equal to X. It is an increasing step function that has a vertical jump of 1/N at each value of X equal to an observed value.  
+* A **Residuals vs Fitted** plot is a scatter plot of residuals on the y-axis and fitted values (estimated responses) on the x-axis. The plot detects non-linearity, unequal error variances, and outliers.  
+* A **Normal Q-Q** plot is used to evaluate how well the distribution of a dataset matches a *standard normal (Gaussian) distribution*, where the mean is 0 and the standard deviation is 1.  
+* A **Scale-Location** plot plots a function of residuals that reflect the errors' variability relative to the mean, we will be looking for a random-looking cloud of point, increasing relationship means variance increases as mean increases, and vice versa.
+
+
+## Data Set Information
+
+We retrieved three data sets from *UCI Machine Learning Repository: Data Sets*. The original data files as well as the **"test.R"** file that runs the mars() function and all the methods written for MARS objects with all three data sets can be found in the folder **"data-raw"** included in our package. There are multiple independent variables and one dependent variable in each data set.    
+
+**Data Set 1**  
+
+* Retrieved from *Physicochemical Properties of Protein Tertiary Structure Data Set* [Link](https://archive.ics.uci.edu/ml/datasets/Physicochemical+Properties+of+Protein+Tertiary+Structure)  
+* Data file name: **“CASP.csv”**  
+* Name used in R for testing: **“data1”**  
+* Description: The data set contains information on the Physicochemical Properties of Protein Tertiary Structure. The data set is taken from CASP 5-9. There are 45730 decoys and sizes varying from 0 to 21 Armstrong.  
+  + **Independent Variables**: F1 (*total surface area*), F2 (*non-polar exposed area*), F3 (*fractional area of exposed non-polar residue*), F4 (*fractional area of exposed non-polar part of residue*), F5 (*molecular mass weighted exposed area*), F6 (*average deviation from standard exposed area of residue*), F7 (*Euclidian distance*), F8 (*secondary structure penalty*), and F9 (*Spacial Distribution constraints*).  
+  + **Dependent Variable**: RMSD (*size of the residue*).
+
+**Data Set 2**  
+
+* Retrieved from *Yacht Hydrodynamics Data Set* [Link](https://archive.ics.uci.edu/ml/datasets/Yacht+Hydrodynamics)    
+* Data file name: **“yacht_hydrodynamic.data”**  
+* Name used in R for testing: **“data2”**  
+* Description: In the Delft data set, 308 full-scale experiments were performed at the Delft Ship Hydromechanics Laboratory. The experiments include 22 different hull forms that are derived from a parent form closely related to Frans Maas' Standfast 43'.  
+  + **Independent Variables**: Longitudinal position of the center of buoyancy (*adimensional*), Prismatic coefficient (*adimensional*), Length-displacement ratio (*adimensional*), Beam-draught ratio (*adimensional*), Length-beam ratio (*adimensional*), and Froude number (*adimensional*).  
+  + **Dependent Variables**: Residuary resistance per unit weight of displacement (*adimensional*).  
+
+**Data Set 3**  
+
+* Retrieved from *Concrete Compressive Strength Data Set*   [Link](https://archive.ics.uci.edu/ml/datasets/Concrete+Compressive+Strength)  
+* Data file name: **“Concrete_Data.xls”**  
+* Name used in R for testing: **“data3”**  
+* Description: Concrete is the most important material in civil engineering. Age and ingredients have a highly nonlinear effect on concrete compressive strength. The data set includes 1030 instances with 8 independent variables and 1 dependent variable.     
+  + **Independent Variables**: Cement (*kg in a metric cubic mixture*), Blast Furnace Slag (*kg in a metric cubic mixture*), Fly Ash (*kg in a metric cubic mixture*), Water (*kg in a metric cubic mixture*), Superplasticizer (*kg in a metric cubic mixture*), Coarse Aggregate (*kg in a metric cubic mixture*), Fine Aggregate (*kg in a metric cubic mixture*), and Age (*days*).  
+  + **Dependent Variable**: Concrete compressive strength (*MPa*).  
+
+
+# Examples
+
+**Data Set 1**
+
+First, read the data file and save as *"data1"*    
+
+> data1 <- read.csv(".../data-raw/CASP.csv")  
+
+Data Set 1
+
+We create a data frame with 100 data and set Mmax = 6 for `mars.control()`, then run with `mars()`
+```{r pressure2, echo=TRUE}
+library(mars)
+test1 <- mars(y~., data1[1:100,], mars.control(Mmax=6))
+test1
+```
+
+Test with `print()`
+```{r pressure3, echo=TRUE}
+print(test1)
+```
+
+Test with `summary()`
+```{r pressure4, echo=TRUE}
+summary(test1)
+```
+
+Test with `plot()`
+```{r pressure5, echo=TRUE, fig.width=8, fig.height=4}
+plot(test1)
+```
+
+Test with `anova()`
+```{r pressure6, echo=TRUE}
+anova(test1)
+```
+
+Test with `predict()`
+```{r pressure7, echo=TRUE}
+predict(test1,data1[101:200,2:10])
+```
+
+**Data Set 2**
+
+First, read the data file and save as *"data2"*  
+
+> data2 <- read.table("data-raw/yacht_hydrodynamics.data")
+
+
+We create a data frame with 200 data and set Mmax = 2 for `mars.control()`, then run with `mars()`
+```{r pressure9, echo=TRUE}
+test2 <- mars(y~., data2[sample(nrow(data2), 200),], mars.control(Mmax=2))
+test2
+```
+
+Test with `print()`
+```{r pressure10, echo=TRUE}
+print(test2)
+```
+
+Test with `summary()`
+```{r pressure11, echo=TRUE}
+summary(test2)
+```
+
+Test with `plot()`
+```{r pressure12, echo=TRUE, fig.width=8, fig.height=4}
+plot(test2)
+```
+
+Test with `anova()`
+```{r pressure13, echo=TRUE}
+anova(test2)
+```
+
+Test with `predict()`
+```{r pressure14, echo=TRUE}
+predict(test2,data2[sample(nrow(data2), 100),1:6])
+```
+
+**Data Set 3**
+
+First, read the data file and save as *"data3"*  
+
+> data3 <- read.csv(".../data-raw/Concrete_Data.xls")    
+
+We create a data frame with random 100 data and set Mmax = 4 for `mars.control()`, then run with `mars()`
+```{r pressure16, echo=TRUE}
+test3 <- mars(y~., data3[1:100,], mars.control(Mmax=4))
+test3
+```
+
+Test with `print()`
+```{r pressure17, echo=TRUE}
+print(test3)
+```
+
+Test with `summary()`
+```{r pressure18, echo=TRUE}
+summary(test3)
+```
+
+Test with `plot()`
+```{r pressure19, echo=TRUE, fig.width=8, fig.height=4}
+plot(test3)
+```
+
+Test with `anova()`
+```{r pressure20, echo=TRUE}
+anova(test3)
+```
+
+Test with `predict()`
+```{r pressure21, echo=TRUE}
+predict(test3,data3[101:200,1:8])
+```
+
+
+# Acknowledgement
+
+We would like to thank **Dr. Becky (Wei) Lin** and our teaching assistant **Sidi Wu** for instructing and assisting us with our project. 
+
+
+# Conclusion
+
+The **MARS Package** is a term project for **STAT 360-361 (Advanced R for Data Science)** at Simon Fraser University in Spring 2023 instructed by Dr. Lin.  
+
+The **MARS (Multivariate Adaptive Regression Splines)** project has demonstrated the power of this technique in modeling complex and nonlinear relationships in data, making it a valuable tool for data analysis in any field where such relationships are present. It is essential to preprocess and select data appropriately to generate accurate MARS models. MARS can be applied in various fields including economics, engineering, and medicine, to name just a few. Overall, the project has shown the potential for this powerful data analysis technique to uncover insights and drive innovation in diverse fields. As the amount and complexity of data continue to grow, the insights and lessons gained from the MARS project will undoubtedly remain relevant and useful for years to come.
+
+Thank you!
+
+

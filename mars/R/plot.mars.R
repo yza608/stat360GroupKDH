@@ -15,7 +15,7 @@
 #' A Normal Q-Q plot is used to evaluate how well the distribution of a dataset matches a standard
 #' normal (Gaussian) distribution, where the mean is 0 and the standard deviation is 1.
 #'
-#' A Scale-Location plot plots a function of residuals that reflect the errors’ variability relative to the
+#' A Scale-Location plot plots a function of residuals that reflect the errors' variability relative to the
 #' mean, we will be looking for a random-looking cloud of point, increasing relationship means variance
 #' increases as mean increases, and vice versa.
 #'
