@@ -12,7 +12,13 @@
 #' @return a `mars` object, which contain the model
 #' @export
 #'
-#' @example man/example/mars.R
+#' @examples
+#' test1 <- mars(y~., data1[1:100,], mars.control(Mmax=6))
+#' print(test1)
+#' summary(test1)
+#' plot(test1)
+#' anova(test1)
+#' predict(test1,data1[101:200,2:10])
 #'
 #' @import stats
 #' @references Jerome H. Friedman. Multivariate Adaptive Regression Splines (with discussion).Annals of Statistics 19/1, 1991. \url{https://statistics.stanford.edu/research/multivariate-adaptive-regression-splines.}
